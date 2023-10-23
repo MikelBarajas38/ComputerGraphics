@@ -87,6 +87,7 @@ int main(int argc, char** argv)
 	Matrix3D matrix3({ {1,1,1,1},{1,1,1,1},{1,1,1,1},{1,1,1,1} });
 	(matrix3 * matrix3).print();
 
+
 	getchar();
 
 	std::string filename = "C:\\Users\\mikel\\OneDrive\\Documents\\Star.obj";
