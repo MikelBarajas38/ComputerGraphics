@@ -7,7 +7,7 @@
 #include "Mesh.h"
 #include "ObjParser.h"
 #include "Matrix3D.h"
-#include "Vector3.h"
+#include "Vec3D.h"
 
 std::vector<Mesh> modelList;
 

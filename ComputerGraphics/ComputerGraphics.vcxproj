@@ -138,7 +138,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjParser.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="Vec3D.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -147,7 +147,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ObjParser.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vec3D.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

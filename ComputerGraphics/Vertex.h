@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector3.h"
+#include "Vec3D.h"
 
 class Vertex : public Vec3D
 {
