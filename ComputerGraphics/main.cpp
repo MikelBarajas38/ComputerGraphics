@@ -8,6 +8,7 @@
 #include "ObjParser.h"
 #include "Matrix3D.h"
 #include "Vec3D.h"
+#include "Transformation.h"
 
 std::vector<Mesh> modelList;
 
@@ -70,24 +71,24 @@ int main(int argc, char** argv)
 {
 	srand(time(0));
 
-	Vec3D vectorTest(3.0,3.0,3.0);
 
-	Matrix3D matrixTest({{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}});
-	matrixTest.print();
+	Vec3D vectorTest(3.0,3.0,4.0);
+	Vec3D midPoint(3.5,0.25,2);
 
-	Vec3D newVec = matrixTest * vectorTest;
+	Matrix3D T0 = Transformation::Translation(-midPoint.x, -midPoint.y, -midPoint.z);
+	Matrix3D TP0 = Transformation::Translation(midPoint.x, midPoint.y, midPoint.z);
+	Matrix3D RX45 = Transformation::RotationX(0.78539816);
+	Matrix3D RY60 = Transformation::RotationY(1.04719755);
+
+	RY60.print();
+
+	Matrix3D MM = TP0 * RY60 * RX45 * T0;
+
+	MM.print();
+
+	Vec3D newVec = MM * vectorTest;
 	std::cout << newVec.x << ' ' << newVec.y << ' ' << newVec.z << '\n';
-
-	Matrix3D matrix2({ {1,2,3,4},{1,2,3,4},{1,2,3,4},{1,2,3,4} });
-	matrix2.print();
-
-	Matrix3D res = matrix2 * matrixTest;
-	res.print();
-
-	Matrix3D matrix3({ {1,1,1,1},{1,1,1,1},{1,1,1,1},{1,1,1,1} });
-	(matrix3 * matrix3).print();
-
-
+	
 	getchar();
 
 	std::string filename = "C:\\Users\\mikel\\OneDrive\\Documents\\Star.obj";
