@@ -4,31 +4,43 @@
 #include <iostream>
 #include <vector>
 
-#include "Mesh.h"
-#include "ObjParser.h"
-#include "Matrix3D.h"
-#include "Vec3D.h"
-#include "Transformation.h"
+#include "Object3D.h"
 
-std::vector<Mesh> modelList;
+std::vector<Object3D> objectList;
+
+int lastFrameTime = 0;
+int currentFrameTime = 0;
+int frameCount = 0;
+int currentTime, previousTime;
 
 void display(void)
 {
 	/*  clear all pixels  */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	currentFrameTime = glutGet(GLUT_ELAPSED_TIME);
+	currentTime = currentFrameTime;
+	double deltaTime = (currentFrameTime - lastFrameTime);
+	double deltaFrame = currentTime - previousTime;
+
+	frameCount++;
+
+	// Calculate FPS every second
+	if (deltaFrame > 1000) {
+		int fps = frameCount * 1000 / deltaTime;
+		std::cout << "FPS: " << fps << std::endl;
+
+		// Reset frame count and time
+		frameCount = 0;
+		previousTime = currentTime;
+	}
+
+	lastFrameTime = currentFrameTime;
+
+
 	glBegin(GL_TRIANGLES);
-	for (Mesh& model : modelList) {
-		for (Face& face : model.getFaceList()) {
-			glColor3fv(face.getColor());
-			//glColor3f(randomFloat(), randomFloat(), randomFloat());
-			Vertex v1 = model.getVertexList()[face.getVertexIndexList()[0]];
-			Vertex v2 = model.getVertexList()[face.getVertexIndexList()[1]];
-			Vertex v3 = model.getVertexList()[face.getVertexIndexList()[2]];
-			glVertex3f(v1.x, v1.y, v1.z);
-			glVertex3f(v2.x, v2.y, v2.z);
-			glVertex3f(v3.x, v3.y, v3.z);
-		}
+	for (Object3D& object : objectList) {
+		object.draw(deltaTime);
 	}
 	glEnd();
 
@@ -54,7 +66,7 @@ void init(void)
 	glLoadIdentity();
 
 	gluLookAt(2.0, 10.0, 10.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0); //normal view
-	//gluLookAt(0.0, 2.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0); //top down view
+	//gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0); //top down view
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -69,49 +81,40 @@ void init(void)
  */
 int main(int argc, char** argv)
 {
-	srand(time(0));
-
-
-	Vec3D vectorTest(3.0,3.0,4.0);
-	Vec3D midPoint(3.5,0.25,2);
-
-	Matrix3D T0 = Transformation::Translation(-midPoint.x, -midPoint.y, -midPoint.z);
-	Matrix3D TP0 = Transformation::Translation(midPoint.x, midPoint.y, midPoint.z);
-	Matrix3D RX45 = Transformation::RotationX(0.78539816);
-	Matrix3D RY60 = Transformation::RotationY(1.04719755);
-
-	RY60.print();
-
-	Matrix3D MM = TP0 * RY60 * RX45 * T0;
-
-	MM.print();
-
-	Vec3D newVec = MM * vectorTest;
-	std::cout << newVec.x << ' ' << newVec.y << ' ' << newVec.z << '\n';
-	
-	getchar();
-
 	std::string filename = "C:\\Users\\mikel\\OneDrive\\Documents\\Star.obj";
-	//std::string filename = "C:\\Users\\mikel\\OneDrive\\Documents\\dode.obj";
-	//std::string filename = "C:\\Users\\mikel\\OneDrive\\Documents\\soda.obj";
-	std::string filename2 = "C:\\Users\\mikel\\OneDrive\\Documents\\FishBone.obj";
-	//std::string filename = "C:\\Users\\mikel\\OneDrive\\Escritorio\\computer graphics\\v3\\untitled.obj";
+	std::string filename1 = "C:\\Users\\mikel\\OneDrive\\Documents\\dode.obj";
+	std::string filename2 = "C:\\Users\\mikel\\OneDrive\\Documents\\soda.obj";
+	std::string filename3 = "C:\\Users\\mikel\\OneDrive\\Documents\\FishBone.obj";
+	std::string filename4 = "C:\\Users\\mikel\\OneDrive\\Escritorio\\computer graphics\\v3\\untitled.obj";
 
-	Mesh model1 = ObjParser::parse(filename);
-	model1.printObj();
-	model1.assignRandomColor();
-	modelList.push_back(model1);
+	for (int i = 0; i < 20; ++i) {
+		for (int j = 0; j < 20; ++j) {
+			Object3D origin(filename4);
+			origin.translate((i - 10) * 2, 0, (j - 10)*2);
+			origin.setControlPoint();
+			origin.scale(.3);
+			origin.setControlPoint();
+			objectList.push_back(origin);
+		}
+	}
 
-	Mesh model2 = ObjParser::parse(filename2);
-	model2.printObj();
-	model2.assignRandomColor();
-	modelList.push_back(model2);
+	//Object3D object1(filename);
+	//object1.print();
+	//object1.rotateY(0);
+	//object1.translate(2, 0, 0);
+	//object1.setMidPoint();
+	//objectList.push_back(object1);
+
+	//Object3D object2(filename2);
+	//object2.print();
+	//object2.translate(-2, 0, 0);
+	//objectList.push_back(object2);
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(800, 600);
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow("Primera Entrega");
+	glutCreateWindow("Segunda Entrega");
 	init();
 	glutDisplayFunc(display);
 	//glutPostRedisplay();

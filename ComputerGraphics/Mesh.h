@@ -16,6 +16,7 @@ public:
 	void addFace(Face face);
 	void printObj();
 	void assignRandomColor();
+	Vec3D getMidPoint();
 
 private:
 	std::string name;

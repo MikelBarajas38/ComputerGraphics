@@ -9,5 +9,9 @@ public:
 	static Matrix3D RotationX(double d);
 	static Matrix3D RotationY(double d);
 	static Matrix3D RotationZ(double d);
+	static Matrix3D Identity();
+
+private:
+	static double degToRad(double d);
 };
 

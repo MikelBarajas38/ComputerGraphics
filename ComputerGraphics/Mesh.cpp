@@ -19,7 +19,7 @@ void Mesh::printObj() {
 	std::cout << "o " << name << "\n";
 
 	for (Vertex& vertex : vertexList) {
-		std::cout << std::fixed << std::setprecision(2) << "v " << vertex.x << " " << vertex.y << " " << vertex.z << "\n";
+		std::cout << std::fixed << std::setprecision(2) << "v " << vertex.pos.x << " " << vertex.pos.y << " " << vertex.pos.z << "\n";
 	}
 
 	for (Face& face : faceList) {
@@ -41,4 +41,18 @@ void Mesh::assignRandomColor()
 	for (Face& face : faceList) {
 		face.setColors(randomFloat(), randomFloat(), randomFloat());
 	}
+}
+
+Vec3D Mesh::getMidPoint()
+{
+	double sumX = 0.0, sumY = 0.0, sumZ = 0.0;
+	size_t numVertices = vertexList.size();
+
+	for (const Vertex& vertex : vertexList) {
+		sumX += vertex.pos.x;
+		sumY += vertex.pos.y;
+		sumZ += vertex.pos.z;
+	}
+
+	return Vec3D(sumX / numVertices, sumY / numVertices, sumZ / numVertices);
 }

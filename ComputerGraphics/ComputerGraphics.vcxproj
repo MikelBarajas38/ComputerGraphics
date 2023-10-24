@@ -134,6 +134,7 @@
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix3D.cpp" />
+    <ClCompile Include="Object3D.cpp" />
     <ClCompile Include="ObjParserTest.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjParser.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="Face.h" />
     <ClInclude Include="Matrix3D.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Object3D.h" />
     <ClInclude Include="ObjParser.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Transformation.h" />

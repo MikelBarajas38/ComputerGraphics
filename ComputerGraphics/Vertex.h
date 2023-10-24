@@ -2,9 +2,11 @@
 
 #include "Vec3D.h"
 
-class Vertex : public Vec3D
+class Vertex
 {
 	public:
-		Vertex(double x, double y, double z) : Vec3D(x, y, z) {}
+		Vec3D pos;
+
+		Vertex(double _x, double _y, double _z) : pos(_x, _y, _z) {};
 };
 

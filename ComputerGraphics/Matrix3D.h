@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Vec3D.h"
+#include "Vertex.h"
 
 class Matrix3D
 {
@@ -9,6 +10,7 @@ class Matrix3D
 		std::vector<std::vector<double>> data;
 
 	public:
+		Matrix3D(){};
 		Matrix3D(int rows, int cols) : data(rows, std::vector<double>(cols, 0.0)) {}
 		Matrix3D(std::initializer_list<std::vector<double>> values) : data(values) {}
 

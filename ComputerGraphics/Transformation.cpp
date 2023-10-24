@@ -1,5 +1,7 @@
 #include "Transformation.h"
 
+#define M_PI 3.14159265358979323846
+
 Matrix3D Transformation::Translation(double Tx, double Ty, double Tz)
 {
     return Matrix3D({{1,0,0,Tx}, 
@@ -18,6 +20,7 @@ Matrix3D Transformation::Scale(double Sx, double Sy, double Sz)
 
 Matrix3D Transformation::RotationX(double d)
 {
+    d = degToRad(d);
     double cosD = cos(d);
     double sinD = sin(d);
 
@@ -29,6 +32,7 @@ Matrix3D Transformation::RotationX(double d)
 
 Matrix3D Transformation::RotationY(double d)
 {
+    d = degToRad(d);
     double cosD = cos(d);
     double sinD = sin(d);
 
@@ -40,6 +44,7 @@ Matrix3D Transformation::RotationY(double d)
 
 Matrix3D Transformation::RotationZ(double d)
 {
+    d = degToRad(d);
     double cosD = cos(d);
     double sinD = sin(d);
 
@@ -47,5 +52,18 @@ Matrix3D Transformation::RotationZ(double d)
                       {sinD, cosD, 0, 0},
                       {0, 0, 1, 0},
                       {0, 0, 0, 1} });
+}
+
+Matrix3D Transformation::Identity()
+{
+    return Matrix3D({ {1,0,0,0},
+                      {0,1,0,0},
+                      {0,0,1,0},
+                      {0,0,0,1} });
+}
+
+double Transformation::degToRad(double d)
+{
+    return d * M_PI / 180.0;
 }
 
