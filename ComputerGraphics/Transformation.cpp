@@ -62,6 +62,17 @@ Matrix3D Transformation::Identity()
                       {0,0,0,1} });
 }
 
+Vec3D Transformation::getCubicBezier(Vec3D p0, Vec3D p1, Vec3D p2, Vec3D p3, double t)
+{
+    double nt = 1 - t;
+
+    double x = nt * nt * nt * p0.x + 3 * t * nt * nt * p1.x + 3 * t * t * nt * p2.x + t * t * t * p3.x;
+    double y = nt * nt * nt * p0.y + 3 * t * nt * nt * p1.y + 3 * t * t * nt * p2.y + t * t * t * p3.y;
+    double z = nt * nt * nt * p0.z + 3 * t * nt * nt * p1.z + 3 * t * t * nt * p2.z + t * t * t * p3.z;
+
+    return Vec3D(x, y, z);
+}
+
 double Transformation::degToRad(double d)
 {
     return d * M_PI / 180.0;

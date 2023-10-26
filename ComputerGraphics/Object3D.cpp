@@ -3,24 +3,18 @@
 #include "Transformation.h"
 #include <iostream>
 
-double temp = .1;
-
 Object3D::Object3D(std::string meshFile)
 {
 	model = ObjParser::parse(meshFile);
 	model.assignRandomColor();
 	controlPoint = model.getMidPoint();
 	MM = Transformation::Identity();
+	name = model.getName();
 	translateOrigin();
 }
 
-void Object3D::draw(double deltaTime)
+void Object3D::draw()
 {
-
-	translateOrigin();
-	rotateY(temp * deltaTime);
-	translate(controlPoint.x, controlPoint.y, controlPoint.z);
-
 	for (Face& face : model.getFaceList()) {
 		glColor3fv(face.getColor());
 		//glColor3f(randomFloat(), randomFloat(), randomFloat());
@@ -38,6 +32,11 @@ void Object3D::print()
 	model.printObj();
 }
 
+void Object3D::transform(Matrix3D M)
+{
+	MM = M;
+}
+
 void Object3D::translateOrigin()
 {
 	Matrix3D T = Transformation::Translation(-controlPoint.x, -controlPoint.y, -controlPoint.z);
@@ -50,6 +49,12 @@ void Object3D::scale(double s)
 	MM = S * MM;
 }
 
+void Object3D::traslateToControlPoint()
+{
+	Matrix3D T = Transformation::Translation(controlPoint.x, controlPoint.y, controlPoint.z);
+	MM = T * MM;
+}
+
 void Object3D::clearTransformations()
 {
 	MM = Transformation::Identity();
@@ -60,6 +65,16 @@ void Object3D::rotateX(double d)
 	Matrix3D R = Transformation::RotationX(d);
 
 	MM = R * MM;
+}
+
+std::string Object3D::getName()
+{
+	return name;
+}
+
+void Object3D::setName(std::string _name)
+{
+	name = _name;
 }
 
 void Object3D::setControlPoint()
