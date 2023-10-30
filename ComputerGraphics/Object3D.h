@@ -16,6 +16,7 @@ class Object3D
 
 	public:
 		Object3D(std::string meshFile);
+		void setColor(double r, double g, double b);
 		void draw();
 		void print();
 		void transform(Matrix3D M);

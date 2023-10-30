@@ -32,6 +32,11 @@ void Object3D::print()
 	model.printObj();
 }
 
+void Object3D::setColor(double r, double g, double b)
+{
+	model.setColor(r, g, b);
+}
+
 void Object3D::transform(Matrix3D M)
 {
 	MM = M;

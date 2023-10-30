@@ -43,6 +43,13 @@ void Mesh::assignRandomColor()
 	}
 }
 
+void Mesh::setColor(double r, double g, double b)
+{
+	for (Face& face : faceList) {
+		face.setColors(r, g, b);
+	}
+}
+
 Vec3D Mesh::getMidPoint()
 {
 	double sumX = 0.0, sumY = 0.0, sumZ = 0.0;

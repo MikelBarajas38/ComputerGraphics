@@ -16,6 +16,7 @@ public:
 	void addFace(Face face);
 	void printObj();
 	void assignRandomColor();
+	void setColor(double r, double g, double b);
 	Vec3D getMidPoint();
 
 private:

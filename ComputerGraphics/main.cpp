@@ -8,17 +8,27 @@
 #include "Transformation.h"
 
 std::vector<Object3D> objectList;
-//std::vector<std::vector<Vec3D>> Trayectory;
+
+std::vector<std::vector<Vec3D>> path;
+int current = 0;
+
+std::vector<Vec3D> allPos;
+int posi = 0;
 
 int lastFrameTime = 0;
 int currentFrameTime = 0;
+double deltaTime;
+
 int frameCount = 0;
-double deltaTime, deltaFrame;
-int currentTime, previousTime;
+int lastFrame = 0;
+int currentFrame = 0;
+double deltaFrame;
 
 double temp = 0.1;
 double t = 0;
 double offset = 0.001;
+
+//realtime calculation of new position
 
 void animation1(Object3D &object)
 {
@@ -46,29 +56,101 @@ void animation1(Object3D &object)
 	temp += 0.1;
 }
 
+void animation2(Object3D& object)
+{
+	Vec3D newPos = Transformation::getCubicBezier(path[current][0], path[current][1], path[current][2], path[current][3], t);
+
+	Matrix3D M = Transformation::Translation(newPos.x, newPos.y, newPos.z) *
+		Transformation::RotationX(270) *
+		Transformation::RotationY(temp) *
+		Transformation::Scale(0.4, 0.4, 0.4);
+
+	object.transform(M);
+
+	if (t > 1)
+	{
+		t = 0;
+		current = (current + 1)%4;
+	}
+	
+	t += offset;
+
+	temp += 0.8;
+
+}
+
+void animation3(Object3D& object, double dt)
+{
+	int dc = 0;
+	if (t < dt) dc = -1;
+
+	Vec3D newPos = Transformation::getCubicBezier(path[current + dc][0], path[current + dc][1], path[current + dc][2], path[current + dc][3], t + dt);
+
+	Matrix3D M = Transformation::Translation(newPos.x, newPos.y, newPos.z) *
+		Transformation::RotationX(270) *
+		Transformation::RotationY(360 - temp) *
+		Transformation::Scale(0.2, 0.2, 0.2);
+
+	object.transform(M);
+}
+
+//precomputed positions
+
+std::vector<Vec3D> generatePositions(double dt)
+{
+	std::vector<Vec3D> positions;
+	for (auto& v : path) {
+		for (double j = 0; j <= 1; j += dt) {
+			Vec3D newPos = Transformation::getCubicBezier(v[0], v[1], v[2], v[3], j);
+			positions.push_back(newPos);
+		}
+	}
+	return positions;
+}
+
+void animationp1(Object3D& object)
+{
+	if (posi >= allPos.size()) posi = 0;
+
+	Matrix3D M = Transformation::Translation(allPos[posi].x, allPos[posi].y, allPos[posi].z) *
+		Transformation::RotationX(270) *
+		Transformation::RotationY(temp) *
+		Transformation::Scale(0.4, 0.4, 0.4);
+
+	object.transform(M);
+
+	posi++;
+
+	temp += 0.1;
+}
+
+void animationp2(Object3D& object, int di)
+{
+	int ni = posi - di;
+	if (ni < 0) ni = allPos.size() + ni;
+
+	Matrix3D M = Transformation::Translation(allPos[ni].x, allPos[ni].y, allPos[ni].z) *
+		Transformation::RotationX(270) *
+		Transformation::RotationY(360 - temp) *
+		Transformation::Scale(0.2, 0.2, 0.2);
+
+	object.transform(M);
+}
+
 void display(void)
 {
 	/*  clear all pixels  */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	currentFrameTime = glutGet(GLUT_ELAPSED_TIME);
-	currentTime = currentFrameTime;
-	deltaTime = (currentFrameTime - lastFrameTime);
-	deltaFrame = currentTime - previousTime;
+	currentFrame = currentFrameTime;
 
-	frameCount++;
-
-	// Calculate FPS every second
-	if (deltaFrame > 1000) {
-		int fps = frameCount * 1000 / deltaTime;
-		std::cout << "FPS: " << fps << std::endl;
-
-		// Reset frame count and time
-		frameCount = 0;
-		previousTime = currentTime;
-	}
+	deltaTime = currentFrameTime - lastFrameTime; //for future animations
+	deltaFrame = currentFrame - lastFrame;
 
 	lastFrameTime = currentFrameTime;
+
+	frameCount++;
 
 	//updateObjects();
 
@@ -76,7 +158,13 @@ void display(void)
 	for (Object3D& object : objectList) {
 
 		if (object.getName() == "test") {
-			animation1(object);
+			animationp1(object);
+		}
+		else if (object.getName() == "test2") {
+			animationp2(object, 200);
+		}
+		else if (object.getName() == "test3") {
+			animationp2(object, 400);
 		}
 
 		object.draw();
@@ -85,6 +173,13 @@ void display(void)
 
 	glutSwapBuffers();
 	glFlush();
+
+	if (deltaFrame > 1000) {
+		int fps = frameCount;
+		std::cout << "FPS: " << fps << std::endl;
+		frameCount = 0;
+		lastFrame = currentFrame;
+	}
 }
 
 void init(void)
@@ -105,7 +200,8 @@ void init(void)
 	glLoadIdentity();
 
 	//gluLookAt(2.0, 10.0, 10.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0); //normal view
-	gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0); //top down view
+	gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0); //hearth
+	//gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0); //top down view
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -126,78 +222,52 @@ int main(int argc, char** argv)
 	std::string filename3 = "C:\\Users\\mikel\\OneDrive\\Documents\\FishBone.obj";
 	std::string filename4 = "C:\\Users\\mikel\\OneDrive\\Escritorio\\computer graphics\\v3\\untitled.obj";
 
-	/*
-	for (int i = 0; i < 20; ++i) {
-		for (int j = 0; j < 20; ++j) {
-			Object3D origin(filename4);
-			origin.scale(.3);
-			origin.setControlPoint();
-			origin.translate((i - 10) * 2, 0, (j - 10)*2);
-			origin.setControlPoint();
-			objectList.push_back(origin);
+	path.push_back({ Vec3D(0,0,0), Vec3D(0,0,-2), Vec3D(3,0,-2), Vec3D(3,0,0) });
+	path.push_back({ Vec3D(3,0,0), Vec3D(3,0,1), Vec3D(2.8,0,1.5), Vec3D(0,0,3) });
+	path.push_back({ Vec3D(0,0,3), Vec3D(-2.8,0,1.5), Vec3D(-3,0,1), Vec3D(-3,0,0) });
+	path.push_back({ Vec3D(-3,0,0), Vec3D(-3,0,-2), Vec3D(0,0,-2), Vec3D(0,0,0) });
+
+	for (auto &v : path) {
+		for (double j = 0; j <= 1; j += 0.1) {
+			Object3D p(filename1);
+
+			p.scale(.01);
+			p.setControlPoint();
+
+			p.rotateX(270);
+			p.setControlPoint();
+
+			Vec3D newPos = Transformation::getCubicBezier(v[0], v[1], v[2], v[3], j);
+			p.translate(newPos.x, newPos.y, newPos.z);
+			p.setControlPoint();
+
+			objectList.push_back(p);
 		}
 	}
-	*/
 
-	//Object3D object1(filename);
-	//object1.print();
-	//object1.rotateY(0);
-	//object1.translate(2, 0, 0);
-	//object1.setMidPoint();
-	//objectList.push_back(object1);
-
-	//Object3D object2(filename2);
-	//object2.print();
-	//object2.translate(-2, 0, 0);
-	//objectList.push_back(object2);
-
-	Object3D p0(filename1);
-	p0.scale(.3);
-	p0.setControlPoint();
-	p0.translate(0,0,0);
-	p0.setControlPoint();
-	objectList.push_back(p0);
-
-	Object3D p1(filename1);
-	p1.scale(.3);
-	p1.setControlPoint();
-	p1.translate(1.5, 0, 2);
-	p1.setControlPoint();
-	objectList.push_back(p1);
-
-	Object3D p2(filename1);
-	p2.scale(.3);
-	p2.setControlPoint();
-	p2.translate(3, 0, -2);
-	p2.setControlPoint();
-	objectList.push_back(p2);
-
-	Object3D p3(filename1);
-	p3.scale(.3);
-	p3.setControlPoint();
-	p3.translate(4.5, 0, 0);
-	p3.setControlPoint();
-	objectList.push_back(p3);
-
-	for (double j = 0; j <= 1; j+=0.1) {
-		Object3D p(filename1);
-
-		p.scale(.1);
-		p.setControlPoint();
-
-		Vec3D newPos = Transformation::getCubicBezier(Vec3D(0, 0, 0), Vec3D(1.5, 0, 2), Vec3D(3, 0, -2), Vec3D(4.5, 0, 0), j);
-		p.translate(newPos.x, newPos.y, newPos.z);
-		p.setControlPoint();
-
-
-		objectList.push_back(p);
-	}
+	allPos = generatePositions(0.001);
 
 	Object3D test(filename);
-	test.scale(.5);
-	test.setControlPoint();
 	test.setName("test");
+	//test.setColor(240, 230, 140);
 	objectList.push_back(test);
+
+	Object3D test2(filename);
+	test2.setName("test2");
+	//test.setColor(240, 230, 140);
+	objectList.push_back(test2);
+
+	Object3D test3(filename);
+	test3.setName("test3");
+	//test.setColor(240, 230, 140);
+	objectList.push_back(test3);
+
+	Object3D test4(filename1);
+	test4.scale(0.6);
+	test4.setControlPoint();
+	test4.translate(0, 0, 1);
+	test4.setControlPoint();
+	objectList.push_back(test4);
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
