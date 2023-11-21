@@ -15,6 +15,7 @@ class Object3D
 		//AnimationManager animationManager;
 
 	public:
+		void draw();
 		Object3D(std::string meshFile);
 		void setColor(int r, int g, int b);
 		void print();
@@ -32,8 +33,8 @@ class Object3D
 		std::string getName();
 		void setName(std::string _name);
 		
-		Mesh getMesh();
-		Matrix3D getModelMatrix();
+		Mesh& getMesh() { return this->model; }
+		Matrix3D& getModelMatrix() { return this->MM; }
 		// void addAnimation();
 
 

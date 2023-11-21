@@ -11,7 +11,7 @@ public:
 	std::string getName() { return this->name; }
 	void setName(std::string _name);
 	std::vector<Vertex>& getVertexList() { return this->vertexList; }
-	std::vector<Face> & getFaceList() { return this->faceList; }
+	std::vector<Face>& getFaceList() { return this->faceList; }
 	void addVertex(Vertex vertex);
 	void addFace(Face face);
 	void printObj();

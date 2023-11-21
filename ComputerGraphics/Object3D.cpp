@@ -14,6 +14,20 @@ Object3D::Object3D(std::string meshFile)
 	model.init();
 }
 
+void Object3D::draw()
+{
+	for (Face& face : model.getFaceList()) {
+		glColor3fv(face.getColor());
+		//glColor3f(randomFloat(), randomFloat(), randomFloat());
+		Vec3D v1 = MM * model.getVertexList()[face.getVertexIndexList()[0]].pos;
+		Vec3D v2 = MM * model.getVertexList()[face.getVertexIndexList()[1]].pos;
+		Vec3D v3 = MM * model.getVertexList()[face.getVertexIndexList()[2]].pos;
+		glVertex3f(v1.x, v1.y, v1.z);
+		glVertex3f(v2.x, v2.y, v2.z);
+		glVertex3f(v3.x, v3.y, v3.z);
+	}
+}
+
 void Object3D::print()
 {
 	model.printObj();
@@ -68,16 +82,6 @@ std::string Object3D::getName()
 void Object3D::setName(std::string _name)
 {
 	name = _name;
-}
-
-Mesh Object3D::getMesh()
-{
-	return model;
-}
-
-Matrix3D Object3D::getModelMatrix()
-{
-	return MM;
 }
 
 void Object3D::setControlPoint()

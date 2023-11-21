@@ -10,7 +10,7 @@ class Face
 		std::vector<int>& getVertexIndexList() { return this->vertexIndexList; }
 		float *getColor() { return this->color; }
 		void setColors(float R, float G, float B);
-		Vec3D getNormal();
+		Vec3D& getNormal(){ return this->normal; }
 		void setNormal(Vec3D normal);
 
 	private:

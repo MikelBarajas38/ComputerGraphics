@@ -165,18 +165,18 @@ void display(void)
 			animationp2(object, 400);
 		}
 
-		Mesh model = object.getMesh();
-		Matrix3D MM = object.getModelMatrix();
-
-		for (Face& face : model.getFaceList()) {
+		for (Face& face : object.getMesh().getFaceList()) {
 			glColor3fv(face.getColor());
-			Vec3D v1 = MM * model.getVertexList()[face.getVertexIndexList()[0]].pos;
-			Vec3D v2 = MM * model.getVertexList()[face.getVertexIndexList()[1]].pos;
-			Vec3D v3 = MM * model.getVertexList()[face.getVertexIndexList()[2]].pos;
+
+			Vec3D v1 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[0]].pos;
+			Vec3D v2 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[1]].pos;
+			Vec3D v3 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[2]].pos;
+
 			glVertex3f(v1.x, v1.y, v1.z);
 			glVertex3f(v2.x, v2.y, v2.z);
 			glVertex3f(v3.x, v3.y, v3.z);
 		}
+
 	}
 	glEnd();
 
@@ -208,8 +208,8 @@ void init(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(2.0, 10.0, 10.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0); //normal view
-	//gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0); //hearth
+	//gluLookAt(2.0, 10.0, 10.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0); //normal view
+	gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0); //hearth
 	//gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0); //top down view
 
 	glEnable(GL_DEPTH_TEST);
@@ -232,7 +232,6 @@ int main(int argc, char** argv)
 	std::string filename3 = "C:\\Users\\mikel\\OneDrive\\Documents\\FishBone.obj";
 	std::string filename4 = "C:\\Users\\mikel\\OneDrive\\Escritorio\\computer graphics\\v3\\untitled.obj";
 
-	/*
 	path.push_back({ Vec3D(0,0,0), Vec3D(0,0,-2), Vec3D(3,0,-2), Vec3D(3,0,0) });
 	path.push_back({ Vec3D(3,0,0), Vec3D(3,0,1), Vec3D(2.8,0,1.5), Vec3D(0,0,3) });
 	path.push_back({ Vec3D(0,0,3), Vec3D(-2.8,0,1.5), Vec3D(-3,0,1), Vec3D(-3,0,0) });
@@ -279,8 +278,8 @@ int main(int argc, char** argv)
 	test4.translate(0, 0, 1);
 	test4.setControlPoint();
 	objectList.push_back(test4);
-	*/
 
+	/*
 	Object3D cube(filename3);
 	objectList.push_back(cube);
 	Mesh model = cube.getMesh();
@@ -300,6 +299,7 @@ int main(int argc, char** argv)
 
 		objectList.push_back(p);
 	}
+	*/
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
