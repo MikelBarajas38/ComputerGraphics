@@ -9,3 +9,13 @@ void Face::setColors(float R, float G, float B) {
 	color[1] = G;
 	color[2] = B;
 }
+
+Vec3D Face::getNormal()
+{
+	return normal;
+}
+
+void Face::setNormal(Vec3D _normal)
+{
+	normal = _normal;
+}

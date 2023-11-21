@@ -18,6 +18,7 @@ public:
 	void assignRandomColor();
 	void setColor(double r, double g, double b);
 	Vec3D getMidPoint();
+	void init();
 
 private:
 	std::string name;
