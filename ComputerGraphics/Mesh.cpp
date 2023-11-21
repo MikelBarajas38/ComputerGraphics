@@ -63,3 +63,21 @@ Vec3D Mesh::getMidPoint()
 
 	return Vec3D(sumX / numVertices, sumY / numVertices, sumZ / numVertices);
 }
+
+//this assumes all data has been set
+void Mesh::init()
+{
+	for (Face& face : faceList) {
+
+		//get normal
+		Vec3D v1 = vertexList[face.getVertexIndexList()[0]].pos;
+		Vec3D v2 = vertexList[face.getVertexIndexList()[1]].pos;
+		Vec3D v3 = vertexList[face.getVertexIndexList()[2]].pos;
+
+		Vec3D a = v2 - v1;
+		Vec3D b = v3 - v1;
+
+		face.setNormal(a.cross(b).norm());
+
+	}
+}

@@ -10,21 +10,8 @@ Object3D::Object3D(std::string meshFile)
 	controlPoint = model.getMidPoint();
 	MM = Transformation::Identity();
 	name = model.getName();
-	translateOrigin();
-}
-
-void Object3D::draw()
-{
-	for (Face& face : model.getFaceList()) {
-		glColor3fv(face.getColor());
-		//glColor3f(randomFloat(), randomFloat(), randomFloat());
-		Vec3D v1 = MM * model.getVertexList()[face.getVertexIndexList()[0]].pos;
-		Vec3D v2 = MM * model.getVertexList()[face.getVertexIndexList()[1]].pos;
-		Vec3D v3 = MM * model.getVertexList()[face.getVertexIndexList()[2]].pos;
-		glVertex3f(v1.x, v1.y, v1.z);
-		glVertex3f(v2.x, v2.y, v2.z);
-		glVertex3f(v3.x, v3.y, v3.z);
-	}
+	//translateOrigin();
+	model.init();
 }
 
 void Object3D::print()
@@ -32,9 +19,10 @@ void Object3D::print()
 	model.printObj();
 }
 
-void Object3D::setColor(double r, double g, double b)
+void Object3D::setColor(int r, int g, int b)
 {
-	model.setColor(r, g, b);
+
+	model.setColor((double) r / 255, (double) g / 255, (double) b/ 255);
 }
 
 void Object3D::transform(Matrix3D M)
@@ -80,6 +68,16 @@ std::string Object3D::getName()
 void Object3D::setName(std::string _name)
 {
 	name = _name;
+}
+
+Mesh Object3D::getMesh()
+{
+	return model;
+}
+
+Matrix3D Object3D::getModelMatrix()
+{
+	return MM;
 }
 
 void Object3D::setControlPoint()
