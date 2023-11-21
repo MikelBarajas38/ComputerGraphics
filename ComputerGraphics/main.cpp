@@ -61,9 +61,9 @@ void animation2(Object3D& object)
 	Vec3D newPos = Transformation::getCubicBezier(path[current][0], path[current][1], path[current][2], path[current][3], t);
 
 	Matrix3D M = Transformation::Translation(newPos.x, newPos.y, newPos.z) *
-		Transformation::RotationX(270) *
-		Transformation::RotationY(temp) *
-		Transformation::Scale(0.4, 0.4, 0.4);
+				 Transformation::RotationX(270) *
+				 Transformation::RotationY(temp) *
+				 Transformation::Scale(0.4, 0.4, 0.4);
 
 	object.transform(M);
 
@@ -87,9 +87,9 @@ void animation3(Object3D& object, double dt)
 	Vec3D newPos = Transformation::getCubicBezier(path[current + dc][0], path[current + dc][1], path[current + dc][2], path[current + dc][3], t + dt);
 
 	Matrix3D M = Transformation::Translation(newPos.x, newPos.y, newPos.z) *
-		Transformation::RotationX(270) *
-		Transformation::RotationY(360 - temp) *
-		Transformation::Scale(0.2, 0.2, 0.2);
+				 Transformation::RotationX(270) *
+				 Transformation::RotationY(360 - temp) *
+				 Transformation::Scale(0.2, 0.2, 0.2);
 
 	object.transform(M);
 }
@@ -113,9 +113,9 @@ void animationp1(Object3D& object)
 	if (posi >= allPos.size()) posi = 0;
 
 	Matrix3D M = Transformation::Translation(allPos[posi].x, allPos[posi].y, allPos[posi].z) *
-		Transformation::RotationX(270) *
-		Transformation::RotationY(temp) *
-		Transformation::Scale(0.4, 0.4, 0.4);
+				 Transformation::RotationX(270) *
+				 Transformation::RotationY(temp) *
+				 Transformation::Scale(0.4, 0.4, 0.4);
 
 	object.transform(M);
 
@@ -130,9 +130,9 @@ void animationp2(Object3D& object, int di)
 	if (ni < 0) ni = allPos.size() + ni;
 
 	Matrix3D M = Transformation::Translation(allPos[ni].x, allPos[ni].y, allPos[ni].z) *
-		Transformation::RotationX(270) *
-		Transformation::RotationY(360 - temp) *
-		Transformation::Scale(0.2, 0.2, 0.2);
+				 Transformation::RotationX(270) *
+				 Transformation::RotationY(360 - temp) *
+				 Transformation::Scale(0.2, 0.2, 0.2);
 
 	object.transform(M);
 }
@@ -145,14 +145,12 @@ void display(void)
 	currentFrameTime = glutGet(GLUT_ELAPSED_TIME);
 	currentFrame = currentFrameTime;
 
-	deltaTime = currentFrameTime - lastFrameTime; //for future animations
+	deltaTime = currentFrameTime - lastFrameTime; //for future animations maybe?
 	deltaFrame = currentFrame - lastFrame;
 
 	lastFrameTime = currentFrameTime;
 
 	frameCount++;
-
-	//updateObjects();
 
 	glBegin(GL_TRIANGLES);
 	for (Object3D& object : objectList) {
@@ -263,7 +261,7 @@ int main(int argc, char** argv)
 	objectList.push_back(test3);
 
 	Object3D test4(filename1);
-	test4.scale(0.6);
+	test4.scale(0.6); //these are custom functions, used for effects pre-rendering :)
 	test4.setControlPoint();
 	test4.translate(0, 0, 1);
 	test4.setControlPoint();
