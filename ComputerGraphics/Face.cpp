@@ -8,9 +8,5 @@ void Face::setColors(float R, float G, float B) {
 	color[0] = R;
 	color[1] = G;
 	color[2] = B;
-}
-
-void Face::setNormal(Vec3D _normal)
-{
-	normal = _normal;
+	color[3] = 0.0;
 }

@@ -67,6 +67,7 @@ Vec3D Mesh::getMidPoint()
 //this assumes all data has been set
 void Mesh::init()
 {
+	/*
 	for (Face& face : faceList) {
 
 		//get normal
@@ -80,4 +81,5 @@ void Mesh::init()
 		face.setNormal(a.cross(b).norm());
 
 	}
+	*/
 }
