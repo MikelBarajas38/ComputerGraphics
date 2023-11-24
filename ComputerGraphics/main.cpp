@@ -37,7 +37,7 @@ float* computeFinalColor(float* color, Vec3D& normal)
 	float Intensity[4] = { ambientLight[0] * color[0] , ambientLight[1] * color[1] , ambientLight[2] * color[2], 0.0 };
 
 	for (DirectionalLight& light : directionalLightList) {
-		float diff = light.getDirection().dot(normal);
+		float diff = -light.getDirection().dot(normal);
 		Intensity[0] += light.getIntensity()[0] * diff;
 		Intensity[1] += light.getIntensity()[1] * diff;
 		Intensity[2] += light.getIntensity()[2] * diff;
@@ -250,12 +250,12 @@ void init(void)
 
 int main(int argc, char** argv)
 {
+
 	std::string filename = "C:\\Users\\mikel\\OneDrive\\Documents\\Star.obj";
 	std::string filename1 = "C:\\Users\\mikel\\OneDrive\\Documents\\dode.obj";
 	std::string filename2 = "C:\\Users\\mikel\\OneDrive\\Documents\\soda.obj";
 	std::string filename3 = "C:\\Users\\mikel\\OneDrive\\Documents\\FishBone.obj";
 	std::string filename4 = "C:\\Users\\mikel\\OneDrive\\Escritorio\\computer graphics\\v3\\untitled.obj";
-
 	
 	path.push_back({ Vec3D(0,0,0), Vec3D(0,0,-2), Vec3D(3,0,-2), Vec3D(3,0,0) });
 	path.push_back({ Vec3D(3,0,0), Vec3D(3,0,1), Vec3D(2.8,0,1.5), Vec3D(0,0,3) });
@@ -328,10 +328,10 @@ int main(int argc, char** argv)
 	objectList.push_back(testpoint2);
 	*/
 
-	DirectionalLight light1(Vec3D(1, -1, 0), Vec3D(0, 0, 0), 0.0, 0.0, 0.5);
+	DirectionalLight light1(Vec3D(1, 0, 0), Vec3D(0, 0, 0), 0.0, 0.3, 0.3);
 	directionalLightList.push_back(light1);
 
-	//DirectionalLight light2(Vec3D(5, -5, 0), Vec3D(0, 0, 0), 0.8, 0.4, 0.3);
+	//DirectionalLight light2(Vec3D(-1, 0, 0), Vec3D(0, 0, 0), 0.0, 0.0, 0.0);
 	//directionalLightList.push_back(light2);
 
 	glutInit(&argc, argv);
