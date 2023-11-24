@@ -45,12 +45,18 @@ std::vector<DirectionalLight> directionalLightList;
 // phong shading
 std::vector<Vec3D> vertexNormals;
 std::vector<int> adyacentFaces;
-bool usePhong = false;
 
 // camera
- Camera camera(5.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-// Camera camera(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
-Vec3D viewDir = camera.getDirection();
+std::vector<Camera> views;
+Camera camera;
+int current_camera = 0;
+Vec3D viewDir;
+
+// user input
+
+bool usePhong = false;
+bool computeDirectional = true;
+bool computeSpecular = true;
 
 float* computeFinalColor(float* color, Vec3D& normal)
 {
@@ -60,16 +66,19 @@ float* computeFinalColor(float* color, Vec3D& normal)
 
 		float diff = -light.getDirection().dot(normal);
 
-		Intensity[0] += light.getIntensity()[0] * diff;
-		Intensity[1] += light.getIntensity()[1] * diff;
-		Intensity[2] += light.getIntensity()[2] * diff;
+		if (computeDirectional) {
+			Intensity[0] += light.getIntensity()[0] * diff;
+			Intensity[1] += light.getIntensity()[1] * diff;
+			Intensity[2] += light.getIntensity()[2] * diff;
+		}
 
-		Vec3D reflectDir = (normal * (2 * (-diff))) - light.getDirection();
-
-		float spec = pow(std::max(viewDir.dot(reflectDir), 0.0), light.getSpecularFactor());
-		Intensity[0] += light.getIntensity()[0] * spec;
-		Intensity[1] += light.getIntensity()[1] * spec;
-		Intensity[2] += light.getIntensity()[2] * spec;
+		if (computeSpecular) {
+			Vec3D reflectDir = (normal * (2 * (-diff))) - light.getDirection();
+			float spec = pow(std::max(viewDir.dot(reflectDir), 0.0), light.getSpecularFactor());
+			Intensity[0] += light.getIntensity()[0] * spec;
+			Intensity[1] += light.getIntensity()[1] * spec;
+			Intensity[2] += light.getIntensity()[2] * spec;
+		}
 
 	}
 
@@ -234,7 +243,7 @@ void display(void)
 			animationp2(object, 400);
 		}
 		else if (object.getName() == "disco") {
-			discoBallAnimation(object);
+			discoBallAnimation2(object);
 		}
 
 		if (!usePhong) {
@@ -342,6 +351,39 @@ void init(void)
 
 }
 
+void inputHandler(unsigned char key, int x, int y)
+{
+	switch (key) {
+		case 'p':
+			usePhong = !usePhong;
+			break;
+		case 's':
+			computeSpecular = !computeSpecular;
+			break;
+		case 'd':
+			computeDirectional = !computeDirectional;
+			break;
+		case 'c':
+			camera = views[(current_camera + 1) % views.size()];
+			current_camera++;
+
+			gluLookAt(camera.getX(), camera.getY(), camera.getZ(),
+				camera.getLookAtX(), camera.getLookAtY(), camera.getLookAtZ(),
+				camera.getUpX(), camera.getUpY(), camera.getUpZ());
+
+			Vec3D viewDir = camera.getDirection();
+			break;
+	}
+
+}
+
+void initCamera()
+{
+	current_camera = 0;
+	camera = views[current_camera];
+	viewDir = camera.getDirection();
+}
+
 /*
  *  Declare initial window size, position, and display mode
  *  (single buffer and RGBA).  Open window with "hello"
@@ -352,7 +394,6 @@ void init(void)
 
 int main(int argc, char** argv)
 {
-
 	std::string filename = "C:\\Users\\mikel\\OneDrive\\Documents\\Star.obj";
 	std::string filename1 = "C:\\Users\\mikel\\OneDrive\\Documents\\dode.obj";
 	std::string filename2 = "C:\\Users\\mikel\\OneDrive\\Documents\\soda.obj";
@@ -369,7 +410,6 @@ int main(int argc, char** argv)
 	plane.setControlPoint();
 	//objectList.push_back(plane);
 
-	/*
 	path.push_back({ Vec3D(0,0,0), Vec3D(0,0,-2), Vec3D(3,0,-2), Vec3D(3,0,0) });
 	path.push_back({ Vec3D(3,0,0), Vec3D(3,0,1), Vec3D(2.8,0,1.5), Vec3D(0,0,3) });
 	path.push_back({ Vec3D(0,0,3), Vec3D(-2.8,0,1.5), Vec3D(-3,0,1), Vec3D(-3,0,0) });
@@ -410,20 +450,23 @@ int main(int argc, char** argv)
 	test3.setColor(240, 230, 140);
 	objectList.push_back(test3);
 
-	Object3D test4(filename1);
+	Object3D test4(filename5);
 	test4.setColor(237, 166, 196);
 	test4.setName("disco");
+	test4.setColor(60, 60, 60);
+
 	test4.scale(0.6); //these are custom functions, used for effects pre-rendering :)
 	test4.setControlPoint();
 	test4.translate(0, 0, 1);
 	test4.setControlPoint();
 	objectList.push_back(test4);
-	*/
 	
+	/*
 	Object3D ball(filename5);
 	ball.setName("disco");
 	ball.setColor(60, 60, 60);
 	objectList.push_back(ball);
+	*/
 
 	/*
 	Object3D testpoint(filename1);
@@ -443,14 +486,22 @@ int main(int argc, char** argv)
 	objectList.push_back(testpoint2);
 	*/
 
-	DirectionalLight light1(Vec3D(3, 0, -1), Vec3D(0, 0, 0), 0.8, 0.8, 0.8, 10.0);
+	DirectionalLight light1(Vec3D(3, 0, -1), Vec3D(0, 0, 0), 0.6, 0.6, 0.6, 10.0);
 	directionalLightList.push_back(light1);
 
 	DirectionalLight light2(Vec3D(-1, -1, 1), Vec3D(0, 0, 0), 0.1, 0.1, 0.3, 15.0);
 	//directionalLightList.push_back(light2);
 
 	DirectionalLight light3(Vec3D(3, 1, 6), Vec3D(0, 0, 0), 0.1, 0.3, 0.1, 25.0);
-	//directionalLightList.push_back(light3);
+	directionalLightList.push_back(light3);
+
+	Camera camera1(5.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	//views.push_back(camera1);
+
+	Camera camera2(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
+	views.push_back(camera2);
+
+	initCamera();
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
@@ -458,6 +509,7 @@ int main(int argc, char** argv)
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("Segunda Entrega");
 	init();
+	glutKeyboardFunc(inputHandler);
 	glutDisplayFunc(display);
 	//glutPostRedisplay();
 	glutIdleFunc(display);

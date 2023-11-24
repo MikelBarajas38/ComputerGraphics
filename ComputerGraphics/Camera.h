@@ -3,6 +3,7 @@
 class Camera
 {
 	public:
+		Camera();
 		Camera(Vec3D _origin, Vec3D look, Vec3D _up);
 		Camera(double x, double y, double z, double lookAtX, double lookAtY, double lookAtZ, double upX, double upY, double upZ);
 

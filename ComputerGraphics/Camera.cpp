@@ -1,5 +1,9 @@
 #include "Camera.h"
 
+Camera::Camera()
+{
+}
+
 Camera::Camera(Vec3D _pos, Vec3D _lookAt, Vec3D _up)
 {
     pos = _pos;
