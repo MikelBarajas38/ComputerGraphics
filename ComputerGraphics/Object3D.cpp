@@ -56,6 +56,12 @@ void Object3D::scale(double s)
 	MM = S * MM;
 }
 
+void Object3D::scale(double x, double y, double z)
+{
+	Matrix3D S = Transformation::Scale(x, y, z);
+	MM = S * MM;
+}
+
 void Object3D::traslateToControlPoint()
 {
 	Matrix3D T = Transformation::Translation(controlPoint.x, controlPoint.y, controlPoint.z);

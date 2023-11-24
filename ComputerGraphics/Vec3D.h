@@ -16,6 +16,7 @@ class Vec3D
 
 		Vec3D operator+(const Vec3D& v);
 		Vec3D operator-(const Vec3D& v);
+		Vec3D operator*(const double& d);
 
 		void print();
 

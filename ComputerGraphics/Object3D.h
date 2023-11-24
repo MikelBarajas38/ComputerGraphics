@@ -24,6 +24,7 @@ class Object3D
 		void translateOrigin();
 		void traslateToControlPoint();
 		void scale(double s);
+		void scale(double x, double y, double z);
 		void rotateX(double d);
 		void rotateY(double d);
 		void rotateZ(double d);

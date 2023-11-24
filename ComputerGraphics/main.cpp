@@ -3,18 +3,26 @@
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
+#include <algorithm>  
 
 #include "Object3D.h"
 #include "Transformation.h"
 #include "DirectionalLight.h"
+#include "Camera.h"
+
+//3D objects in scene
 
 std::vector<Object3D> objectList;
+
+// Trayectories
 
 std::vector<std::vector<Vec3D>> path;
 int current = 0;
 
 std::vector<Vec3D> allPos;
 int posi = 0;
+
+// time and animation stuff
 
 int lastFrameTime = 0;
 int currentFrameTime = 0;
@@ -29,18 +37,40 @@ double temp = 0.1;
 double t = 0;
 double offset = 0.001;
 
+// lightning
+
 float ambientLight[4] = { 1.0, 1.0, 1.0, 0.0 };
 std::vector<DirectionalLight> directionalLightList;
+
+// phong shading
+std::vector<Vec3D> vertexNormals;
+std::vector<int> adyacentFaces;
+bool usePhong = false;
+
+// camera
+ Camera camera(5.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+// Camera camera(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
+Vec3D viewDir = camera.getDirection();
 
 float* computeFinalColor(float* color, Vec3D& normal)
 {
 	float Intensity[4] = { ambientLight[0] * color[0] , ambientLight[1] * color[1] , ambientLight[2] * color[2], 0.0 };
 
 	for (DirectionalLight& light : directionalLightList) {
+
 		float diff = -light.getDirection().dot(normal);
+
 		Intensity[0] += light.getIntensity()[0] * diff;
 		Intensity[1] += light.getIntensity()[1] * diff;
 		Intensity[2] += light.getIntensity()[2] * diff;
+
+		Vec3D reflectDir = (normal * (2 * (-diff))) - light.getDirection();
+
+		float spec = pow(std::max(viewDir.dot(reflectDir), 0.0), light.getSpecularFactor());
+		Intensity[0] += light.getIntensity()[0] * spec;
+		Intensity[1] += light.getIntensity()[1] * spec;
+		Intensity[2] += light.getIntensity()[2] * spec;
+
 	}
 
 	return Intensity;
@@ -155,6 +185,27 @@ void animationp2(Object3D& object, int di)
 	object.transform(M);
 }
 
+void discoBallAnimation(Object3D& ball)
+{
+	Matrix3D M = Transformation::RotationY(temp);
+
+	ball.transform(M);
+
+	temp += 0.1;
+}
+
+void discoBallAnimation2(Object3D& ball)
+{
+	Matrix3D M = Transformation::Translation(0.0, 0.0, 1.0) *
+				 Transformation::RotationX(270) *
+				 Transformation::RotationY(temp) *
+				 Transformation::Scale(0.6, 0.6, 0.6);
+
+	ball.transform(M);
+
+	temp += 0.1;
+}
+
 void display(void)
 {
 	/*  clear all pixels  */
@@ -182,23 +233,70 @@ void display(void)
 		else if (object.getName() == "test3") {
 			animationp2(object, 400);
 		}
+		else if (object.getName() == "disco") {
+			discoBallAnimation(object);
+		}
 
-		for (Face& face : object.getMesh().getFaceList()) {
+		if (!usePhong) {
+			for (Face& face : object.getMesh().getFaceList()) {
 
-			Vec3D v1 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[0]].pos;
-			Vec3D v2 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[1]].pos;
-			Vec3D v3 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[2]].pos;
+				Vec3D v1 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[0]].pos;
+				Vec3D v2 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[1]].pos;
+				Vec3D v3 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[2]].pos;
 
-			Vec3D a = v2 - v1;
-			Vec3D b = v3 - v1;
+				Vec3D a = v2 - v1;
+				Vec3D b = v3 - v1;
 
-			Vec3D normal = a.cross(b).norm();
+				Vec3D normal = a.cross(b).norm();
 
-			glColor4fv(computeFinalColor(face.getColor(), normal));
+				glColor4fv(computeFinalColor(face.getColor(), normal));
 
-			glVertex3f(v1.x, v1.y, v1.z);
-			glVertex3f(v2.x, v2.y, v2.z);
-			glVertex3f(v3.x, v3.y, v3.z);
+				glVertex3f(v1.x, v1.y, v1.z);
+				glVertex3f(v2.x, v2.y, v2.z);
+				glVertex3f(v3.x, v3.y, v3.z);
+			}
+		}
+		else {
+
+			int n_vertex = object.getMesh().getVertexList().size();
+			vertexNormals.resize(n_vertex);
+			adyacentFaces.resize(n_vertex);
+
+			for (Face& face : object.getMesh().getFaceList()) {
+
+				Vec3D v1 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[0]].pos;
+				Vec3D v2 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[1]].pos;
+				Vec3D v3 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[2]].pos;
+
+				Vec3D a = v2 - v1;
+				Vec3D b = v3 - v1;
+
+				Vec3D normal = a.cross(b).norm();
+
+				vertexNormals[face.getVertexIndexList()[0]] = vertexNormals[face.getVertexIndexList()[0]] + normal;
+				vertexNormals[face.getVertexIndexList()[1]] = vertexNormals[face.getVertexIndexList()[1]] + normal;
+				vertexNormals[face.getVertexIndexList()[2]] = vertexNormals[face.getVertexIndexList()[2]] + normal;
+
+				adyacentFaces[face.getVertexIndexList()[0]]++;
+				adyacentFaces[face.getVertexIndexList()[1]]++;
+				adyacentFaces[face.getVertexIndexList()[2]]++;
+
+			}
+
+			for (Face& face : object.getMesh().getFaceList()) {
+
+				for (int i = 0; i < 3; i++) {
+					Vec3D v = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[i]].pos;
+					Vec3D vertexNormal = (vertexNormals[face.getVertexIndexList()[i]] * (1.0 / (double)adyacentFaces[face.getVertexIndexList()[i]])).norm();
+					glColor4fv(computeFinalColor(face.getColor(), vertexNormal));
+					glVertex3f(v.x, v.y, v.z);
+				}
+
+			}
+
+			vertexNormals.clear();
+			adyacentFaces.clear();
+
 		}
 
 	}
@@ -233,8 +331,12 @@ void init(void)
 	glLoadIdentity();
 
 	//gluLookAt(5.0, 10.0, 10.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0); //normal view
-	gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0); //hearth
+	//gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0); //hearth
 	//gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0); //top down view
+
+	gluLookAt(camera.getX(), camera.getY(), camera.getZ(),
+		camera.getLookAtX(), camera.getLookAtY(), camera.getLookAtZ(),
+		camera.getUpX(), camera.getUpY(), camera.getUpZ());
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -256,14 +358,25 @@ int main(int argc, char** argv)
 	std::string filename2 = "C:\\Users\\mikel\\OneDrive\\Documents\\soda.obj";
 	std::string filename3 = "C:\\Users\\mikel\\OneDrive\\Documents\\FishBone.obj";
 	std::string filename4 = "C:\\Users\\mikel\\OneDrive\\Escritorio\\computer graphics\\v3\\untitled.obj";
-	
+	std::string filename5 = "C:\\Users\\mikel\\OneDrive\\Documents\\sphere.obj";
+	std::string filename6 = "C:\\Users\\mikel\\OneDrive\\Documents\\plane.obj";
+
+	Object3D plane(filename6);
+	plane.scale(100, 0, 100); //these are custom functions, used for effects pre-rendering :)
+	plane.setColor(148, 148, 220);
+	plane.setControlPoint();
+	plane.translate(0, -10, 0);
+	plane.setControlPoint();
+	//objectList.push_back(plane);
+
+	/*
 	path.push_back({ Vec3D(0,0,0), Vec3D(0,0,-2), Vec3D(3,0,-2), Vec3D(3,0,0) });
 	path.push_back({ Vec3D(3,0,0), Vec3D(3,0,1), Vec3D(2.8,0,1.5), Vec3D(0,0,3) });
 	path.push_back({ Vec3D(0,0,3), Vec3D(-2.8,0,1.5), Vec3D(-3,0,1), Vec3D(-3,0,0) });
 	path.push_back({ Vec3D(-3,0,0), Vec3D(-3,0,-2), Vec3D(0,0,-2), Vec3D(0,0,0) });
 
 	for (auto &v : path) {
-		for (double j = 0; j <= 1; j += 0.1) {
+		for (double j = 0; j <= 1; j += 0.2) {
 			Object3D p(filename1);
 
 			p.scale(.01);
@@ -298,17 +411,19 @@ int main(int argc, char** argv)
 	objectList.push_back(test3);
 
 	Object3D test4(filename1);
+	test4.setColor(237, 166, 196);
+	test4.setName("disco");
 	test4.scale(0.6); //these are custom functions, used for effects pre-rendering :)
 	test4.setControlPoint();
 	test4.translate(0, 0, 1);
 	test4.setControlPoint();
 	objectList.push_back(test4);
-	
-	/*
-	Object3D cube(filename1);
-	cube.setColor(255, 0, 0);
-	objectList.push_back(cube);
 	*/
+	
+	Object3D ball(filename5);
+	ball.setName("disco");
+	ball.setColor(60, 60, 60);
+	objectList.push_back(ball);
 
 	/*
 	Object3D testpoint(filename1);
@@ -328,11 +443,14 @@ int main(int argc, char** argv)
 	objectList.push_back(testpoint2);
 	*/
 
-	DirectionalLight light1(Vec3D(1, 0, 0), Vec3D(0, 0, 0), 0.0, 0.3, 0.3);
+	DirectionalLight light1(Vec3D(3, 0, -1), Vec3D(0, 0, 0), 0.8, 0.8, 0.8, 10.0);
 	directionalLightList.push_back(light1);
 
-	//DirectionalLight light2(Vec3D(-1, 0, 0), Vec3D(0, 0, 0), 0.0, 0.0, 0.0);
+	DirectionalLight light2(Vec3D(-1, -1, 1), Vec3D(0, 0, 0), 0.1, 0.1, 0.3, 15.0);
 	//directionalLightList.push_back(light2);
+
+	DirectionalLight light3(Vec3D(3, 1, 6), Vec3D(0, 0, 0), 0.1, 0.3, 0.1, 25.0);
+	//directionalLightList.push_back(light3);
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);

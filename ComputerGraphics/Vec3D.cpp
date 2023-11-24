@@ -11,6 +11,11 @@ Vec3D Vec3D::operator-(const Vec3D& v)
 	return Vec3D(x - v.x, y - v.y, z - v.z);
 }
 
+Vec3D Vec3D::operator*(const double& d)
+{
+	return Vec3D(x * d, y * d, z * d);
+}
+
 void Vec3D::print()
 {
 	std::cout << "(" << x << ", " << y << ", " << z << ")\n";
