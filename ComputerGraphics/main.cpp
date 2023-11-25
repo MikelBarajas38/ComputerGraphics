@@ -364,14 +364,10 @@ void inputHandler(unsigned char key, int x, int y)
 			computeDirectional = !computeDirectional;
 			break;
 		case 'c':
-			camera = views[(current_camera + 1) % views.size()];
-			current_camera++;
-
-			gluLookAt(camera.getX(), camera.getY(), camera.getZ(),
-				camera.getLookAtX(), camera.getLookAtY(), camera.getLookAtZ(),
-				camera.getUpX(), camera.getUpY(), camera.getUpZ());
-
-			Vec3D viewDir = camera.getDirection();
+			current_camera = (current_camera + 1) % views.size();
+			camera = views[current_camera];
+			viewDir = camera.getDirection();
+			init();
 			break;
 	}
 
@@ -404,7 +400,7 @@ int main(int argc, char** argv)
 
 	Object3D plane(filename6);
 	plane.scale(100, 0, 100); //these are custom functions, used for effects pre-rendering :)
-	plane.setColor(148, 148, 220);
+	plane.setColor(63, 15, 60);
 	plane.setControlPoint();
 	plane.translate(0, -10, 0);
 	plane.setControlPoint();
@@ -489,24 +485,45 @@ int main(int argc, char** argv)
 	DirectionalLight light1(Vec3D(3, 0, -1), Vec3D(0, 0, 0), 0.6, 0.6, 0.6, 10.0);
 	directionalLightList.push_back(light1);
 
-	DirectionalLight light2(Vec3D(-1, -1, 1), Vec3D(0, 0, 0), 0.1, 0.1, 0.3, 15.0);
-	//directionalLightList.push_back(light2);
+	DirectionalLight light2(Vec3D(-3, 0, 1), Vec3D(0, 0, 0), 0.2, 0.2, 0.4, 15.0);
+	directionalLightList.push_back(light2);
 
-	DirectionalLight light3(Vec3D(3, 1, 6), Vec3D(0, 0, 0), 0.1, 0.3, 0.1, 25.0);
+	DirectionalLight light4(Vec3D(-3, 1, -6), Vec3D(0, 0, 0), 0.9, 0.3, 0.3, 25.0);
+	directionalLightList.push_back(light4);
+
+	DirectionalLight light3(Vec3D(3, 1, 6), Vec3D(0, 0, 0), 0.2, 0.6, 0.2, 25.0);
 	directionalLightList.push_back(light3);
 
-	Camera camera1(5.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-	//views.push_back(camera1);
+	Camera camera1(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
+	views.push_back(camera1);
 
-	Camera camera2(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
+	Camera camera2(10.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
 	views.push_back(camera2);
+
+	Camera camera3(8.0, 6.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
+	views.push_back(camera3);
+
+	Camera camera4(5.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	views.push_back(camera4);
+
+	Camera camera1r(0.0, -10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
+	views.push_back(camera1r);
+
+	Camera camera2r(-10.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
+	views.push_back(camera2r);
+
+	Camera camera3r(-8.0, -6.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
+	views.push_back(camera3r);
+
+	Camera camera4r(-5.0, 0.0, -5.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+	views.push_back(camera4r);
 
 	initCamera();
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(800, 600);
-	glutInitWindowPosition(100, 100);
+	glutInitWindowPosition(30, 30);
 	glutCreateWindow("Segunda Entrega");
 	init();
 	glutKeyboardFunc(inputHandler);
