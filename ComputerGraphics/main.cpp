@@ -10,6 +10,11 @@
 #include "DirectionalLight.h"
 #include "Camera.h"
 
+// window
+
+#define WIDTH 800.0
+#define HEIGHT 600.0
+
 //3D objects in scene
 
 std::vector<Object3D> objectList;
@@ -54,10 +59,13 @@ Vec3D viewDir;
 
 // user input
 
-bool usePhong = false;
+bool useGouraud = false;
 bool computeDirectional = true;
 bool computeSpecular = true;
-int model = 1;
+bool runAnimation = true;
+
+int model = 0;
+std::vector<std::string> objFiles = { "sphere.obj", "torus.obj", "goodstar.obj", "bullet_bill.obj", "mri.obj", "fishbone.obj" };
 
 float* computeFinalColor(float* color, Vec3D& normal)
 {
@@ -179,7 +187,7 @@ void animationp1(Object3D& object)
 
 	posi++;
 
-	temp += 0.1;
+	//temp += 0.1;
 }
 
 void animationp2(Object3D& object, int di)
@@ -206,14 +214,17 @@ void discoBallAnimation(Object3D& ball)
 
 void discoBallAnimation2(Object3D& ball)
 {
+
 	Matrix3D M = Transformation::Translation(0.0, 0.0, 1.0) *
 				 Transformation::RotationX(270) *
 				 Transformation::RotationY(temp) *
-				 Transformation::Scale(0.6, 0.6, 0.6);
+				 Transformation::Scale(1.5, 1.5, 1.5);
 
 	ball.transform(M);
 
-	temp += 0.1;
+	if (runAnimation) {
+		temp += 0.1;;
+	}
 }
 
 void display(void)
@@ -247,7 +258,7 @@ void display(void)
 			discoBallAnimation2(object);
 		}
 
-		if (!usePhong) {
+		if (!useGouraud) {
 			for (Face& face : object.getMesh().getFaceList()) {
 
 				Vec3D v1 = object.getModelMatrix() * object.getMesh().getVertexList()[face.getVertexIndexList()[0]].pos;
@@ -335,7 +346,7 @@ void init(void)
 	//glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);
 
-	gluPerspective(45.0, 800.0 / 600.0, 0.1, 100.0);
+	gluPerspective(45.0, WIDTH / HEIGHT, 0.1, 100.0);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -349,32 +360,23 @@ void init(void)
 }
 
 void changeModel() {
+
 	objectList.pop_back();
-	std::string filename;
+	model = (model + 1) % objFiles.size();
 
-	if (model == 1) {
-		filename = "torus.obj";
-	}
-	else if (model == 2) {
-		filename = "goodstar.obj";
-	}
-	else {
-		filename = "sphere.obj";
-	}
-
+	std::string filename = objFiles[model];
 	Object3D test4(filename);
 	test4.setColor(237, 166, 196);
 	test4.setName("disco");
 	test4.setColor(60, 60, 60);
 	objectList.push_back(test4);
-	model = (model + 1) % 3;
 }
 
 void inputHandler(unsigned char key, int x, int y)
 {
 	switch (key) {
-		case 'p':
-			usePhong = !usePhong;
+		case 'g':
+			useGouraud = !useGouraud;
 			break;
 		case 's':
 			computeSpecular = !computeSpecular;
@@ -390,6 +392,10 @@ void inputHandler(unsigned char key, int x, int y)
 			break;
 		case 'm':
 			changeModel();
+			break;
+		case 'p':
+			runAnimation = !runAnimation;
+			break;
 	}
 
 }
@@ -425,6 +431,20 @@ int main(int argc, char** argv)
 	std::string filename4 = "untitled.obj";
 	std::string filename5 = "sphere.obj";
 	std::string filename6 = "plane.obj";
+
+	/*
+	for (int i = 0; i < 10; ++i) {
+		for (int j = 0; j < 10; ++j) {
+			Object3D origin(filename4);
+			origin.translate((i) * 2, 0, (j) * 2);
+			origin.setControlPoint();
+			origin.scale(.3);
+			origin.setControlPoint();
+			origin.setColor(23, 23, 23);
+			objectList.push_back(origin);
+		}
+	}
+	*/
 	
 	Object3D plane(filename6);
 	plane.scale(100, 0, 100); //these are custom functions, used for effects pre-rendering :)
@@ -434,6 +454,7 @@ int main(int argc, char** argv)
 	plane.setControlPoint();
 	//objectList.push_back(plane);
 
+	/*
 	path.push_back({ Vec3D(0,0,0), Vec3D(0,0,-2), Vec3D(3,0,-2), Vec3D(3,0,0) });
 	path.push_back({ Vec3D(3,0,0), Vec3D(3,0,1), Vec3D(2.8,0,1.5), Vec3D(0,0,3) });
 	path.push_back({ Vec3D(0,0,3), Vec3D(-2.8,0,1.5), Vec3D(-3,0,1), Vec3D(-3,0,0) });
@@ -473,19 +494,20 @@ int main(int argc, char** argv)
 	test3.setName("test3");
 	test3.setColor(240, 230, 140);
 	objectList.push_back(test3);
+	*/
 
+	/*
 	Object3D test4(filename5);
 	test4.setColor(237, 166, 196);
 	test4.setName("disco");
 	test4.setColor(60, 60, 60);
 	objectList.push_back(test4);
+	*/
 	
-	/*
 	Object3D ball(filename5);
 	ball.setName("disco");
 	ball.setColor(60, 60, 60);
 	objectList.push_back(ball);
-	*/
 
 	/*
 	Object3D testpoint(filename1);
@@ -509,10 +531,10 @@ int main(int argc, char** argv)
 	directionalLightList.push_back(light1);
 
 	DirectionalLight light2(Vec3D(-3, 0, 1), Vec3D(0, 0, 0), 0.2, 0.2, 0.4, 15.0);
-	//directionalLightList.push_back(light2);
+	directionalLightList.push_back(light2);
 
 	DirectionalLight light4(Vec3D(-3, 1, -6), Vec3D(0, 0, 0), 0.9, 0.3, 0.3, 25.0);
-	//directionalLightList.push_back(light4);
+	directionalLightList.push_back(light4);
 
 	DirectionalLight light3(Vec3D(3, 1, 6), Vec3D(0, 0, 0), 0.2, 0.6, 0.2, 25.0);
 	directionalLightList.push_back(light3);
@@ -545,8 +567,8 @@ int main(int argc, char** argv)
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(800, 600);
-	glutInitWindowPosition(30, 30);
+	glutInitWindowSize(WIDTH, HEIGHT);
+	glutInitWindowPosition(0, 0);
 	glutCreateWindow("Computer Graphics");
 	init();
 	glutKeyboardFunc(inputHandler);
