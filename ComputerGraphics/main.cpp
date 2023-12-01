@@ -425,7 +425,7 @@ int main(int argc, char** argv)
 	std::string filename4 = "untitled.obj";
 	std::string filename5 = "sphere.obj";
 	std::string filename6 = "plane.obj";
-
+	
 	Object3D plane(filename6);
 	plane.scale(100, 0, 100); //these are custom functions, used for effects pre-rendering :)
 	plane.setColor(63, 15, 60);
