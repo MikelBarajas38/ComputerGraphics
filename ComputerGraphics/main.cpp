@@ -57,6 +57,7 @@ Vec3D viewDir;
 bool usePhong = false;
 bool computeDirectional = true;
 bool computeSpecular = true;
+int model = 1;
 
 float* computeFinalColor(float* color, Vec3D& normal)
 {
@@ -339,16 +340,34 @@ void init(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	//gluLookAt(5.0, 10.0, 10.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0); //normal view
-	//gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0); //hearth
-	//gluLookAt(0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0); //top down view
-
 	gluLookAt(camera.getX(), camera.getY(), camera.getZ(),
 		camera.getLookAtX(), camera.getLookAtY(), camera.getLookAtZ(),
 		camera.getUpX(), camera.getUpY(), camera.getUpZ());
 
 	glEnable(GL_DEPTH_TEST);
 
+}
+
+void changeModel() {
+	objectList.pop_back();
+	std::string filename;
+
+	if (model == 1) {
+		filename = "torus.obj";
+	}
+	else if (model == 2) {
+		filename = "goodstar.obj";
+	}
+	else {
+		filename = "sphere.obj";
+	}
+
+	Object3D test4(filename);
+	test4.setColor(237, 166, 196);
+	test4.setName("disco");
+	test4.setColor(60, 60, 60);
+	objectList.push_back(test4);
+	model = (model + 1) % 3;
 }
 
 void inputHandler(unsigned char key, int x, int y)
@@ -369,8 +388,17 @@ void inputHandler(unsigned char key, int x, int y)
 			viewDir = camera.getDirection();
 			init();
 			break;
+		case 'm':
+			changeModel();
 	}
 
+}
+
+void mouseHandler(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		changeModel();
+	}
 }
 
 void initCamera()
@@ -390,13 +418,13 @@ void initCamera()
 
 int main(int argc, char** argv)
 {
-	std::string filename = "C:\\Users\\mikel\\OneDrive\\Documents\\Star.obj";
-	std::string filename1 = "C:\\Users\\mikel\\OneDrive\\Documents\\dode.obj";
-	std::string filename2 = "C:\\Users\\mikel\\OneDrive\\Documents\\soda.obj";
-	std::string filename3 = "C:\\Users\\mikel\\OneDrive\\Documents\\FishBone.obj";
-	std::string filename4 = "C:\\Users\\mikel\\OneDrive\\Escritorio\\computer graphics\\v3\\untitled.obj";
-	std::string filename5 = "C:\\Users\\mikel\\OneDrive\\Documents\\sphere.obj";
-	std::string filename6 = "C:\\Users\\mikel\\OneDrive\\Documents\\plane.obj";
+	std::string filename = "eyeless_star.obj";
+	std::string filename1 = "dode.obj";
+	std::string filename2 = "soda.obj";
+	std::string filename3 = "FishBone.obj";
+	std::string filename4 = "untitled.obj";
+	std::string filename5 = "sphere.obj";
+	std::string filename6 = "plane.obj";
 
 	Object3D plane(filename6);
 	plane.scale(100, 0, 100); //these are custom functions, used for effects pre-rendering :)
@@ -450,11 +478,6 @@ int main(int argc, char** argv)
 	test4.setColor(237, 166, 196);
 	test4.setName("disco");
 	test4.setColor(60, 60, 60);
-
-	test4.scale(0.6); //these are custom functions, used for effects pre-rendering :)
-	test4.setControlPoint();
-	test4.translate(0, 0, 1);
-	test4.setControlPoint();
 	objectList.push_back(test4);
 	
 	/*
@@ -486,10 +509,10 @@ int main(int argc, char** argv)
 	directionalLightList.push_back(light1);
 
 	DirectionalLight light2(Vec3D(-3, 0, 1), Vec3D(0, 0, 0), 0.2, 0.2, 0.4, 15.0);
-	directionalLightList.push_back(light2);
+	//directionalLightList.push_back(light2);
 
 	DirectionalLight light4(Vec3D(-3, 1, -6), Vec3D(0, 0, 0), 0.9, 0.3, 0.3, 25.0);
-	directionalLightList.push_back(light4);
+	//directionalLightList.push_back(light4);
 
 	DirectionalLight light3(Vec3D(3, 1, 6), Vec3D(0, 0, 0), 0.2, 0.6, 0.2, 25.0);
 	directionalLightList.push_back(light3);
@@ -524,9 +547,10 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(800, 600);
 	glutInitWindowPosition(30, 30);
-	glutCreateWindow("Segunda Entrega");
+	glutCreateWindow("Computer Graphics");
 	init();
 	glutKeyboardFunc(inputHandler);
+	glutMouseFunc(mouseHandler);
 	glutDisplayFunc(display);
 	//glutPostRedisplay();
 	glutIdleFunc(display);
