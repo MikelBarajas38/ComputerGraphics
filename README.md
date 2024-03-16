@@ -10,11 +10,11 @@ The project supports .obj file loading. The file is then parsed into an Object3D
 
 ### Rendering
 
-To display objects on screen, the project uses GLUT for window management and OpenGL's built-in functions glBegin() and glEnd() to render the object's triangular faces.
+To display objects on screen, the project uses GLUT for window management and OpenGL's built-in `glBegin()` and `glEnd()` functions to render the object's triangular faces.
 
 ### Animation
 
-Animations are done using matrix multiplications between transformation matrices (rotation, translation, and scaling) and the model matrix for each object. All the linear algebra operations were implemented from scratch. Transformations can be applied using a functional API (inspired by Unity’s transform component) or by manually performing matrix multiplication and using the Object3D transform method. To create more complex animations, trajectories can be precomputed using cubic Bézier curve splines.
+Animations are done using matrix multiplications between transformation matrices (rotation, translation, and scaling) and the model matrix for each object. All the linear algebra operations were implemented from scratch. Transformations can be applied using a functional API (inspired by Unity’s transform component) or by manually performing matrix multiplication and using the Object3D `transform` method. To create more complex animations, trajectories can be precomputed using cubic Bézier curve splines.
 
 ### Lightning
 
