@@ -10,12 +10,17 @@ class DirectionalLight
 		float* getIntensity() { return this->intensity; }
 		Vec3D& getDirection() { return this->dir; }
 		float getSpecularFactor() { return this->specularFactor; }
+		bool isActive() { return this->active; }
+		void turnOn();
+		void turnOff();
+		void change();
 
 	private:
 		Vec3D origin;
 		Vec3D dir;
 		float intensity[4];
 		float specularFactor;
+		bool active;
 
 };
 

@@ -29,6 +29,22 @@ DirectionalLight::DirectionalLight(Vec3D _origin, Vec3D look, double r, double g
 	intensity[2] = b;
 	intensity[3] = 0.0;
 	specularFactor = _specular;
+	active = true;
+}
+
+void DirectionalLight::turnOn()
+{
+	active = true;
+}
+
+void DirectionalLight::turnOff()
+{
+	active = false;
+}
+
+void DirectionalLight::change()
+{
+	active = !active;
 }
 
 

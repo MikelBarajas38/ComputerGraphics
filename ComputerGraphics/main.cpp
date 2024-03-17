@@ -73,6 +73,8 @@ float* computeFinalColor(float* color, Vec3D& normal)
 
 	for (DirectionalLight& light : directionalLightList) {
 
+		if (!light.isActive()) continue;
+
 		float diff = -light.getDirection().dot(normal);
 
 		if (computeDirectional) {
@@ -90,6 +92,7 @@ float* computeFinalColor(float* color, Vec3D& normal)
 		}
 
 	}
+
 
 	return Intensity;
 }
@@ -185,13 +188,16 @@ void animationp1(Object3D& object)
 
 	object.transform(M);
 
-	posi++;
+	if (runAnimation) {
+		posi++;
+	}
 
 	//temp += 0.1;
 }
 
 void animationp2(Object3D& object, int di)
 {
+
 	int ni = posi - di;
 	if (ni < 0) ni = allPos.size() + ni;
 
@@ -218,7 +224,7 @@ void discoBallAnimation2(Object3D& ball)
 	Matrix3D M = Transformation::Translation(0.0, 0.0, 1.0) *
 				 Transformation::RotationX(270) *
 				 Transformation::RotationY(temp) *
-				 Transformation::Scale(1.5, 1.5, 1.5);
+				 Transformation::Scale(0.8, 0.8, 0.8);
 
 	ball.transform(M);
 
@@ -396,6 +402,18 @@ void inputHandler(unsigned char key, int x, int y)
 		case 'p':
 			runAnimation = !runAnimation;
 			break;
+		case '1':
+			directionalLightList[0].change();
+			break;
+		case '2':
+			directionalLightList[1].change();
+			break;
+		case '3':
+			directionalLightList[2].change();
+			break;
+		case '4':
+			directionalLightList[3].change();
+			break;
 	}
 
 }
@@ -454,7 +472,7 @@ int main(int argc, char** argv)
 	plane.setControlPoint();
 	//objectList.push_back(plane);
 
-	/*
+	
 	path.push_back({ Vec3D(0,0,0), Vec3D(0,0,-2), Vec3D(3,0,-2), Vec3D(3,0,0) });
 	path.push_back({ Vec3D(3,0,0), Vec3D(3,0,1), Vec3D(2.8,0,1.5), Vec3D(0,0,3) });
 	path.push_back({ Vec3D(0,0,3), Vec3D(-2.8,0,1.5), Vec3D(-3,0,1), Vec3D(-3,0,0) });
@@ -494,8 +512,7 @@ int main(int argc, char** argv)
 	test3.setName("test3");
 	test3.setColor(240, 230, 140);
 	objectList.push_back(test3);
-	*/
-
+	
 	/*
 	Object3D test4(filename5);
 	test4.setColor(237, 166, 196);
@@ -533,11 +550,11 @@ int main(int argc, char** argv)
 	DirectionalLight light2(Vec3D(-3, 0, 1), Vec3D(0, 0, 0), 0.2, 0.2, 0.4, 15.0);
 	directionalLightList.push_back(light2);
 
-	DirectionalLight light4(Vec3D(-3, 1, -6), Vec3D(0, 0, 0), 0.9, 0.3, 0.3, 25.0);
-	directionalLightList.push_back(light4);
-
 	DirectionalLight light3(Vec3D(3, 1, 6), Vec3D(0, 0, 0), 0.2, 0.6, 0.2, 25.0);
 	directionalLightList.push_back(light3);
+
+	DirectionalLight light4(Vec3D(-3, 1, -6), Vec3D(0, 0, 0), 0.9, 0.3, 0.3, 25.0);
+	directionalLightList.push_back(light4);
 
 	Camera camera1(0.0, 10.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, -1.0);
 	views.push_back(camera1);
