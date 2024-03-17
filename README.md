@@ -20,7 +20,7 @@ Animations are done using matrix multiplications between transformation matrices
 
 ### Lightning
 
-The engine supports both ambient and directional lighting, using surface normal to compute the diffuse and specular reflection components. The project contains a homebrew flat and a Goraud shading implementation.
+The engine supports both ambient and directional lighting, using surface normals to compute the diffuse and specular reflection components. The project contains a homebrew flat and a Goraud shading implementation.
 
 
 
