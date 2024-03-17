@@ -224,7 +224,7 @@ void discoBallAnimation2(Object3D& ball)
 	Matrix3D M = Transformation::Translation(0.0, 0.0, 1.0) *
 				 Transformation::RotationX(270) *
 				 Transformation::RotationY(temp) *
-				 Transformation::Scale(0.8, 0.8, 0.8);
+				 Transformation::Scale(1.5, 1.5, 1.5);
 
 	ball.transform(M);
 
@@ -478,6 +478,7 @@ int main(int argc, char** argv)
 	path.push_back({ Vec3D(0,0,3), Vec3D(-2.8,0,1.5), Vec3D(-3,0,1), Vec3D(-3,0,0) });
 	path.push_back({ Vec3D(-3,0,0), Vec3D(-3,0,-2), Vec3D(0,0,-2), Vec3D(0,0,0) });
 
+	/*
 	for (auto &v : path) {
 		for (double j = 0; j <= 1; j += 0.2) {
 			Object3D p(filename1);
@@ -512,6 +513,7 @@ int main(int argc, char** argv)
 	test3.setName("test3");
 	test3.setColor(240, 230, 140);
 	objectList.push_back(test3);
+	*/
 	
 	/*
 	Object3D test4(filename5);
