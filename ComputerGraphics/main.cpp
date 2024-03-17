@@ -60,7 +60,7 @@ Vec3D viewDir;
 // user input
 
 bool useGouraud = false;
-bool computeDirectional = true;
+bool computeDiffuse = true;
 bool computeSpecular = true;
 bool runAnimation = true;
 
@@ -77,7 +77,7 @@ float* computeFinalColor(float* color, Vec3D& normal)
 
 		float diff = -light.getDirection().dot(normal);
 
-		if (computeDirectional) {
+		if (computeDiffuse) {
 			Intensity[0] += light.getIntensity()[0] * diff;
 			Intensity[1] += light.getIntensity()[1] * diff;
 			Intensity[2] += light.getIntensity()[2] * diff;
@@ -388,7 +388,7 @@ void inputHandler(unsigned char key, int x, int y)
 			computeSpecular = !computeSpecular;
 			break;
 		case 'd':
-			computeDirectional = !computeDirectional;
+			computeDiffuse = !computeDiffuse;
 			break;
 		case 'c':
 			current_camera = (current_camera + 1) % views.size();
