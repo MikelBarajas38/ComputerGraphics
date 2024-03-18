@@ -45,6 +45,7 @@ I plan on implementing a scene class to handle everything needed to create a 3D 
 Cool "experiments" (bugs) that I faced while developing the project:
 
 > Anchor point was set incorrectly when creating multiple `Object3D`'s
+
 https://github.com/MikelBarajas38/ComputerGraphics/assets/72757601/8f41289c-e605-4228-a3e5-11cdfe90f574
 
 
