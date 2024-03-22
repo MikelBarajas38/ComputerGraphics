@@ -38,7 +38,7 @@ Open the solution in Visual Studio. I recommend using the freeglut.3.0.0 package
 
 ## Future Work
 
-I plan on implementing a scene class to handle everything needed to create a 3D scene (basically taking all the demo does into its own class). Also, I plan on adding material support to improve lightning interaction, for example, by allowing objects to have different characteristics such as metallic reflectance. Currently, only face color is used (also, the specular component is intuitively stored in each lighting).
+I plan on implementing a scene class to handle everything needed to create a 3D scene (basically taking all the demo does into its own class). Also, I plan on adding material support to improve lightning interaction, for example, by allowing objects to have different characteristics such as metallic reflectance. Currently, only face color is used (also, the specular component is unintuitively stored in each lighting).
 
 ## Extra stuff
 
